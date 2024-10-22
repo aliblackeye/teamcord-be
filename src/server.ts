@@ -1,10 +1,27 @@
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
+import cors from "cors";
 
 const app = express();
+
+// CORS'u yapılandırın
+app.use(
+  cors({
+    origin: true, // Tüm origin'lere izin ver
+    methods: ["GET", "POST"], // İzin verilen HTTP metodları
+    credentials: true, // Kimlik bilgilerini içeren istekleri kabul et
+  })
+);
+
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: true, // Tüm origin'lere izin ver
+    methods: ["GET", "POST"], // İzin verilen HTTP metodları
+    credentials: true, // Kimlik bilgilerini içeren istekleri kabul et
+  },
+});
 
 io.on("connection", (socket) => {
   console.log("New client connected");
