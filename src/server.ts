@@ -5,10 +5,10 @@ import cors from "cors";
 
 const app = express();
 
-// CORS'u yapılandırın
+// Tüm originlere izin ver
 app.use(
   cors({
-    origin: true, // Tüm origin'lere izin ver
+    origin: "*", // Tüm originlere izin ver
     methods: ["GET", "POST"], // İzin verilen HTTP metodları
     credentials: true, // Kimlik bilgilerini içeren istekleri kabul et
   })
@@ -17,34 +17,53 @@ app.use(
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: true, // Tüm origin'lere izin ver
-    methods: ["GET", "POST"], // İzin verilen HTTP metodları
-    credentials: true, // Kimlik bilgilerini içeren istekleri kabul et
+    origin: "*", // Tüm originlere izin ver
+    methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
 io.on("connection", (socket) => {
   console.log("New client connected");
 
-  socket.on("join-room", (roomId) => {
+  socket.on("join-room", ({ roomId, username }) => {
     socket.join(roomId);
-    console.log(`Client joined room: ${roomId}`);
+    console.log(`Client ${username} joined room: ${roomId}`);
+    // Odaya katılan diğer kullanıcılara bildirim gönder
+    socket.to(roomId).emit("user-joined", { id: socket.id, username });
+    // Odadaki mevcut kullanıcıları yeni katılan kullanıcıya bildir
+    const roomClients = io.sockets.adapter.rooms.get(roomId);
+    if (roomClients) {
+      const existingUsers = Array.from(roomClients).filter(
+        (id) => id !== socket.id
+      );
+      socket.emit("existing-users", existingUsers);
+    }
   });
 
-  socket.on("offer", (offer, roomId) => {
-    socket.to(roomId).emit("offer", offer);
+  socket.on("offer", (offer, roomId, targetId) => {
+    console.log(`Offer from ${socket.id} to ${targetId} in room ${roomId}`);
+    socket.to(targetId).emit("offer", offer, socket.id);
   });
 
-  socket.on("answer", (answer, roomId) => {
-    socket.to(roomId).emit("answer", answer);
+  socket.on("answer", (answer, roomId, targetId) => {
+    console.log(`Answer from ${socket.id} to ${targetId} in room ${roomId}`);
+    socket.to(targetId).emit("answer", answer, socket.id);
   });
 
-  socket.on("ice-candidate", (candidate, roomId) => {
-    socket.to(roomId).emit("ice-candidate", candidate);
+  socket.on("ice-candidate", (candidate, roomId, targetId) => {
+    console.log(
+      `ICE candidate from ${socket.id} to ${targetId} in room ${roomId}`
+    );
+    socket.to(targetId).emit("ice-candidate", candidate, socket.id);
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
+    // Odaya katılan diğer kullanıcılara bildirim gönder
+    socket.rooms.forEach((roomId) => {
+      socket.to(roomId).emit("user-left", { id: socket.id });
+    });
   });
 });
 
