@@ -1,0 +1,28 @@
+{
+  "name": "teamcord-be",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "node dist/server.js",
+    "lint": "eslint . --ext .ts",
+    "dev": "nodemon src/server.ts",
+    "build": "tsc"
+  },
+  "repository": "https://github.com/aliblackeye/teamcord-be.git",
+  "author": "aliblackeye <ali.blackeye@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.1",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.8.1",
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.11.0"
+  }
+}
