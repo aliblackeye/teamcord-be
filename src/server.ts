@@ -11,7 +11,6 @@ import { Channel, VoiceChannel } from "./types";
 import dotenv from "dotenv";
 dotenv.config();
 
-const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const port = process.env.PORT || 5000;
 

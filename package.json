@@ -1,7 +1,6 @@
 {
   "name": "teamcord-be",
   "version": "1.0.0",
-  "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
     "lint": "eslint . --ext .ts",
