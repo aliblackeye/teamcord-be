@@ -10,7 +10,6 @@ export type OngoingCall = {
 export type Participant = {
   username: string;
   socketId: string;
-  stream: MediaStream | null;
 };
 
 export type Message = {
@@ -28,6 +27,11 @@ export type VoiceChannel = {
 
 export type Subscriber = {
   socketId: string;
+};
+
+export type WebRTCSignal = {
+  sdp: any;
+  participant: Participant;
 };
 
 export type Channel = { channelId: string; subscribers: Subscriber[] };

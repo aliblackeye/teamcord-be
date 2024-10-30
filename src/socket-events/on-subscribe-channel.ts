@@ -17,12 +17,16 @@ export const onSubscribeChannel = async ({
   } else {
     channels.push({ channelId, subscribers: [{ socketId }] });
   }
-
-  console.log("channels:", channels);
+  console.log("kanala abone oldu", socketId);
 
   // Soketi odaya kat
 
   await socket.join(channelId);
   // Send channel to the same channel subscribers
-  io.to(channelId).emit("get-channel-subscribers", channels);
+  io.to(channelId).emit(
+    "get-channel-subscribers",
+    existingChannel
+      ? existingChannel
+      : channels.find((c) => c.channelId === channelId)
+  );
 };
