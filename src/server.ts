@@ -59,6 +59,8 @@ io.on("connection", (socket) => {
       .filter((c) => c.subscribers.some((s) => s.socketId === socket.id))
       .map((c) => c.channelId);
 
+    console.log("joinedChannelIds", joinedChannelIds);
+
     // Kullanıcıyı kanallardan çıkar
     channels = channels
       .map((c) => ({
@@ -67,9 +69,9 @@ io.on("connection", (socket) => {
       }))
       .filter((c) => c.subscribers.length > 0);
 
-    // sesli odadan çıkar
+    // kullanıcıyı sesli odalardan çıkar
     voiceChannels = voiceChannels.filter((vc) =>
-      joinedChannelIds.includes(vc.channelId)
+      vc.subscribers.some((s) => s.socketId !== socket.id)
     );
 
     // Aynı kanal abonelerine kanalları gönder
@@ -84,5 +86,7 @@ io.on("connection", (socket) => {
     joinedVoiceChannels.forEach((vc) => {
       io.to(vc.channelId).emit("get-voice-channel", vc);
     });
+
+    console.log("voiceChannels", voiceChannels);
   });
 });

@@ -13,12 +13,13 @@ export const onJoinVoiceChannel = ({
 
   if (existingVoiceChannel) {
     console.log("existingVoiceChannel", existingVoiceChannel);
-    if (
-      existingVoiceChannel.subscribers.some(
-        (s) => s.socketId === participant.socketId
-      )
-    )
+    const existingParticipant = existingVoiceChannel.subscribers.find(
+      (s) => s.socketId === participant.socketId
+    );
+
+    if (existingParticipant) {
       return;
+    }
 
     existingVoiceChannel.subscribers.push(participant);
     console.log("Sesli odaya katildi");
