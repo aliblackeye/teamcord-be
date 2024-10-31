@@ -7,6 +7,14 @@ export const onJoinVoiceChannel = ({
   channelId: string;
   participant: Participant;
 }) => {
+  const alreadyJoinedVoiceChannel = voiceChannels.find((vc) =>
+    vc.subscribers.some((s) => s.socketId === participant.socketId)
+  );
+
+  if (alreadyJoinedVoiceChannel) {
+    return;
+  }
+
   const existingVoiceChannel = voiceChannels.find(
     (vc) => vc.channelId === channelId
   );
@@ -27,6 +35,7 @@ export const onJoinVoiceChannel = ({
     voiceChannels.push({
       channelId,
       subscribers: [participant],
+      messages: [],
     });
     console.log("Yeni sesli oda olusturuldu");
   }

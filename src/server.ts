@@ -10,6 +10,8 @@ import { onLeaveVoiceChannel } from "./socket-events/on-leave-voice-channel";
 import { Channel, VoiceChannel } from "./types";
 import dotenv from "dotenv";
 import { onWebRTCSignal } from "./socket-events/on-webrtc-signal";
+import { onDisconnect } from "./socket-events/on-disconnect";
+import { onNewRoomMessage } from "./socket-events/on-new-room-message";
 dotenv.config();
 
 const hostname = "localhost";
@@ -51,42 +53,9 @@ io.on("connection", (socket) => {
 
   socket.on("leave-voice-channel", onLeaveVoiceChannel);
 
+  socket.on("new-room-message", onNewRoomMessage);
+
   socket.on("webrtc-signal", onWebRTCSignal);
 
-  socket.on("disconnect", () => {
-    console.log("ayrıldı");
-    const joinedChannelIds = channels
-      .filter((c) => c.subscribers.some((s) => s.socketId === socket.id))
-      .map((c) => c.channelId);
-
-    console.log("joinedChannelIds", joinedChannelIds);
-
-    // Kullanıcıyı kanallardan çıkar
-    channels = channels
-      .map((c) => ({
-        ...c,
-        subscribers: c.subscribers.filter((s) => s.socketId !== socket.id),
-      }))
-      .filter((c) => c.subscribers.length > 0);
-
-    // kullanıcıyı sesli odalardan çıkar
-    voiceChannels = voiceChannels.filter((vc) =>
-      vc.subscribers.some((s) => s.socketId !== socket.id)
-    );
-
-    // Aynı kanal abonelerine kanalları gönder
-    joinedChannelIds.forEach((channelId) => {
-      io.to(channelId).emit("get-channel-subscribers", channels);
-    });
-
-    // sesli odaları gönder
-    const joinedVoiceChannels = voiceChannels.filter((vc) =>
-      joinedChannelIds.includes(vc.channelId)
-    );
-    joinedVoiceChannels.forEach((vc) => {
-      io.to(vc.channelId).emit("get-voice-channel", vc);
-    });
-
-    console.log("voiceChannels", voiceChannels);
-  });
+  socket.on("disconnect", () => onDisconnect(socket));
 });
