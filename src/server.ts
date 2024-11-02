@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import { onWebRTCSignal } from "./socket-events/on-webrtc-signal";
 import { onDisconnect } from "./socket-events/on-disconnect";
 import { onNewRoomMessage } from "./socket-events/on-new-room-message";
+import { onPing } from "./socket-events/on-ping";
 dotenv.config();
 
 const hostname = "localhost";
@@ -42,6 +43,8 @@ httpServer
 
 io.on("connection", (socket) => {
   console.log("client connected...", socket.id);
+
+  socket.on("ping", () => onPing(socket));
 
   socket.on("subscribe-channel", (data) =>
     onSubscribeChannel({ ...data, socket })
