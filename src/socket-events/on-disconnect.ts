@@ -1,13 +1,10 @@
 import { Socket } from "socket.io";
-import { channels, io, voiceChannels } from "../server";
+import { channels, io, rooms } from "../server";
 
 export const onDisconnect = (socket: Socket) => {
-  console.log("ayrıldı");
   const joinedChannelIds = channels
     .filter((c) => c.subscribers.some((s) => s.socketId === socket.id))
     .map((c) => c.channelId);
-
-  console.log("joinedChannelIds", joinedChannelIds);
 
   // Kullanıcıyı kanallardan çıkar
   channels.splice(
@@ -22,26 +19,26 @@ export const onDisconnect = (socket: Socket) => {
   );
 
   // kullanıcıyı sesli odalardan çıkar
-  voiceChannels.splice(
+  rooms.splice(
     0,
-    voiceChannels.length,
-    ...voiceChannels.filter((vc) =>
-      vc.subscribers.some((s) => s.socketId !== socket.id)
-    )
+    rooms.length,
+    ...rooms.filter((r) => r.subscribers.some((s) => s.socketId !== socket.id))
   );
 
-  // Aynı kanal abonelerine kanalları gönder
+  // Aynı kanal abonelerine kanalı gönder
   joinedChannelIds.forEach((channelId) => {
-    io.to(channelId).emit("get-channel-subscribers", channels);
+    io.to(channelId).emit(
+      "get-channel-subscribers",
+      channels.find((c) => c.channelId === channelId)
+    );
   });
 
   // sesli odaları gönder
-  const joinedVoiceChannels = voiceChannels.filter((vc) =>
-    joinedChannelIds.includes(vc.channelId)
+  const joinedRooms = rooms.filter((r) =>
+    joinedChannelIds.includes(r.channelId)
   );
-  joinedVoiceChannels.forEach((vc) => {
-    io.to(vc.channelId).emit("get-voice-channel", vc);
-  });
 
-  console.log("voiceChannels", voiceChannels);
+  joinedRooms.forEach((room) => {
+    io.to(room.channelId).emit("get-room", room);
+  });
 };

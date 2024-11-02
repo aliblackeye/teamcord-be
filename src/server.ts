@@ -2,12 +2,12 @@ import { createServer } from "node:http";
 import express from "express";
 import { Server } from "socket.io";
 import cors from "cors";
-import { onJoinVoiceChannel } from "./socket-events/on-join-voice-channel";
+import { onJoinRoom } from "./socket-events/on-join-room";
 import { onSubscribeChannel } from "./socket-events/on-subscribe-channel";
 
-import { onGetVoiceChannel } from "./socket-events/on-get-voice-channel";
-import { onLeaveVoiceChannel } from "./socket-events/on-leave-voice-channel";
-import { Channel, VoiceChannel } from "./types";
+import { onGetRoom } from "./socket-events/on-get-room";
+import { onLeaveRoom } from "./socket-events/on-leave-room";
+import { Channel, Room } from "./types";
 import dotenv from "dotenv";
 import { onWebRTCSignal } from "./socket-events/on-webrtc-signal";
 import { onDisconnect } from "./socket-events/on-disconnect";
@@ -17,7 +17,7 @@ dotenv.config();
 const hostname = "localhost";
 const port = process.env.PORT || 5000;
 
-export let voiceChannels: VoiceChannel[] = [];
+export let rooms: Room[] = [];
 export let channels: Channel[] = [];
 
 const app = express();
@@ -47,11 +47,11 @@ io.on("connection", (socket) => {
     onSubscribeChannel({ ...data, socket })
   );
 
-  socket.on("get-voice-channel", onGetVoiceChannel);
+  socket.on("get-room", onGetRoom);
 
-  socket.on("join-voice-channel", onJoinVoiceChannel);
+  socket.on("join-room", onJoinRoom);
 
-  socket.on("leave-voice-channel", onLeaveVoiceChannel);
+  socket.on("leave-room", onLeaveRoom);
 
   socket.on("new-room-message", onNewRoomMessage);
 

@@ -27,9 +27,10 @@ export type NewMessage = {
   avatar: string;
 };
 
-export type VoiceChannel = {
+export type Room = {
   channelId: string;
   subscribers: Participant[];
+  usersInCall: Participant[];
   messages: Message[];
 };
 
