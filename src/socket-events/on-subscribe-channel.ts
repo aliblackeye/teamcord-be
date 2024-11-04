@@ -10,12 +10,11 @@ export const onSubscribeChannel = async ({
   socketId: string;
   socket: Socket;
 }) => {
-  console.log("subscribe olundu");
+  console.log("kanala abone oldu", channelId);
   const existingChannel = channels.find((c) => c.channelId === channelId);
 
   if (existingChannel) {
     if (existingChannel.subscribers.some((s) => s.socketId === socketId)) {
-      console.log("zaten abone", socketId);
       return;
     }
 

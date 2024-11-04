@@ -22,7 +22,10 @@ export const onDisconnect = (socket: Socket) => {
   rooms.splice(
     0,
     rooms.length,
-    ...rooms.filter((r) => r.subscribers.some((s) => s.socketId !== socket.id))
+    ...rooms.map((r) => ({
+      ...r,
+      users: r.users.filter((s) => s.socketId !== socket.id),
+    }))
   );
 
   // Aynı kanal abonelerine kanalı gönder

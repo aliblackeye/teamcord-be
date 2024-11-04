@@ -13,6 +13,7 @@ import { onWebRTCSignal } from "./socket-events/on-webrtc-signal";
 import { onDisconnect } from "./socket-events/on-disconnect";
 import { onNewRoomMessage } from "./socket-events/on-new-room-message";
 import { onPing } from "./socket-events/on-ping";
+import { onJoinCall } from "./socket-events/on-join-call";
 dotenv.config();
 
 const hostname = "localhost";
@@ -50,11 +51,13 @@ io.on("connection", (socket) => {
     onSubscribeChannel({ ...data, socket })
   );
 
-  socket.on("get-room", onGetRoom);
-
   socket.on("join-room", onJoinRoom);
 
+  socket.on("get-room", onGetRoom);
+
   socket.on("leave-room", onLeaveRoom);
+
+  socket.on("join-call", onJoinCall);
 
   socket.on("new-room-message", onNewRoomMessage);
 

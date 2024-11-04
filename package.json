@@ -13,6 +13,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "simple-peer": "^9.11.1",
     "socket.io": "^4.8.1",
     "uuid": "^11.0.2"
   },
@@ -20,6 +21,7 @@
     "@eslint/js": "^9.13.0",
     "@types/express": "^5.0.0",
     "@types/node": "^22.8.1",
+    "@types/simple-peer": "^9.11.8",
     "eslint": "^9.13.0",
     "globals": "^15.11.0",
     "ts-node": "^10.9.2",

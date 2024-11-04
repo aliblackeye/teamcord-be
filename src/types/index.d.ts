@@ -1,15 +1,12 @@
-export type SocketUser = {
-  username: string;
-  socketId: string;
-};
+import Peer from "simple-peer";
 
 export type OngoingCall = {
-  participants: Participant[];
+  users: User[];
 };
 
-export type Participant = {
-  username: string;
+export type User = {
   socketId: string;
+  username: string;
 };
 
 export type Message = {
@@ -29,8 +26,8 @@ export type NewMessage = {
 
 export type Room = {
   channelId: string;
-  subscribers: Participant[];
-  usersInCall: Participant[];
+  users: User[];
+  usersInCall: User[];
   messages: Message[];
 };
 
@@ -38,9 +35,15 @@ export type Subscriber = {
   socketId: string;
 };
 
+export type PeerData = {
+  peerConnection: Peer.Instance;
+  stream: MediaStream | null;
+  participant: User;
+};
+
 export type WebRTCSignal = {
   sdp: any;
-  participant: Participant;
+  participant: User;
 };
 
 export type Channel = { channelId: string; subscribers: Subscriber[] };
